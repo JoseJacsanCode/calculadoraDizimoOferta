@@ -22,6 +22,11 @@ Este projeto é uma calculadora desenvolvida em Flutter que permite aos usuário
 4. Os valores do dízimo e do pacto serão exibidos na tela.
 5. Para fazer um novo cálculo, pressione **"Limpar tudo"**.
 
+## 📥 Baixe o apk pelo link:
+
+ [Fiel 7](https://www.mediafire.com/file/mt2cdaejwvyj2av/Fiel_7.apk/file)
+ 
+
 ## 🛠️ Como Executar o Projeto
 
 Para clonar e executar esta aplicação, você precisará do [Flutter](https://flutter.dev/docs/get-started/install) instalado em sua máquina.
