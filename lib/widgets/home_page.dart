@@ -36,8 +36,7 @@ class _HomePage extends State<HomePage> {
         double renda = double.parse(dinheiroGanhoString);
         double dizimo = renda * 0.10;
         double porcentagemPacto = double.parse(pactoString);
-        double pacto = renda / porcentagemPacto;
-
+        double pacto = (renda * porcentagemPacto) / 100;
         _infoDados =
             'Seu dízimo: ${dizimo.toStringAsFixed(2)} \n Seu pacto: ${pacto.toStringAsFixed(2)}';
       });
@@ -106,6 +105,15 @@ class _HomePage extends State<HomePage> {
                       decimal: true,
                     ),
                     controller: pactoController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Digite uma porcentagem';
+                      }
+                      if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                        return 'Valor inválido';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   Row(
