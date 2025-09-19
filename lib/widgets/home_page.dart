@@ -8,24 +8,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  final TextEditingController dinheiroGanhoController = TextEditingController();
-  final TextEditingController pactoController = TextEditingController();
+  TextEditingController dinheiroGanhoController = TextEditingController();
+  TextEditingController pactoController = TextEditingController();
 
-  String _infoDados = 'Informe seus dados';
+  GlobalKey<FormState> _chaveForm = GlobalKey<FormState>();
 
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String _infoDados = 'Preencha os campos acima';
 
-  void _limparDados() {
+  void _limparTudo() {
     dinheiroGanhoController.clear();
     pactoController.clear();
     setState(() {
-      _infoDados = 'Informe seus dados';
-      _formKey = GlobalKey<FormState>();
+      _infoDados = 'Preencha os campos acima';
+      _chaveForm = GlobalKey<FormState>();
     });
   }
 
   void _calcular() {
-    if (_formKey.currentState?.validate() ?? false) {
+    if (_chaveForm.currentState?.validate() ?? false) {
       setState(() {
         final dinheiroGanhoString = dinheiroGanhoController.text.replaceAll(
           ',',
@@ -33,16 +33,13 @@ class _HomePage extends State<HomePage> {
         );
         final pactoString = pactoController.text.replaceAll(',', '.');
 
-        //Dízimo
         double renda = double.parse(dinheiroGanhoString);
-        double dizimo = renda / 10;
-
-        //Oferta
+        double dizimo = renda * 0.10;
         double porcentagemPacto = double.parse(pactoString);
         double pacto = renda / porcentagemPacto;
 
         _infoDados =
-            'Seu Dízimo: R\$ ${dizimo.toStringAsFixed(2)} \n Sua oferta: R\$ ${pacto.toStringAsFixed(2)}';
+            'Seu dízimo: ${dizimo.toStringAsFixed(2)} \n Seu pacto: ${pacto.toStringAsFixed(2)}';
       });
     }
   }
@@ -52,7 +49,7 @@ class _HomePage extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFF153862),
-        title: Text(
+        title: const Text(
           'Calculadora de Dízimo e Oferta',
           style: TextStyle(
             color: Colors.white,
@@ -63,15 +60,15 @@ class _HomePage extends State<HomePage> {
         centerTitle: true,
       ),
       body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: _chaveForm,
               child: Column(
                 children: [
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Dinheiro ganho',
                       labelStyle: TextStyle(
                         color: Color(0xFF153862),
@@ -86,17 +83,17 @@ class _HomePage extends State<HomePage> {
                     controller: dinheiroGanhoController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Informe o dinheiro ganho';
+                        return 'Digite um valor';
                       }
                       if (double.tryParse(value.replaceAll(',', '.')) == null) {
-                        return 'Número inválido';
+                        return 'Valor inválido';
                       }
                       return null;
                     },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   TextFormField(
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       labelText: 'Porcentagem do pacto',
                       labelStyle: TextStyle(
                         color: Color(0xFF153862),
@@ -109,17 +106,8 @@ class _HomePage extends State<HomePage> {
                       decimal: true,
                     ),
                     controller: pactoController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Informe a porcentagem';
-                      }
-                      if (double.tryParse(value.replaceAll(',', '.')) == null) {
-                        return 'Número inválido';
-                      }
-                      return null;
-                    },
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -132,14 +120,14 @@ class _HomePage extends State<HomePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Calcular',
                           style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       ElevatedButton(
-                        onPressed: _limparDados,
+                        onPressed: _limparTudo,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF153862),
                           padding: EdgeInsets.all(16),
@@ -147,17 +135,17 @@ class _HomePage extends State<HomePage> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
+                        child: const Text(
                           'Limpar tudo',
                           style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     _infoDados,
-                    style: TextStyle(color: Colors.black, fontSize: 17),
+                    style: const TextStyle(color: Colors.black, fontSize: 17),
                   ),
                 ],
               ),
