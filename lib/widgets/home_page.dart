@@ -8,18 +8,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  TextEditingController dinheiroGanhoController = TextEditingController();
-  TextEditingController seuPactoController = TextEditingController();
+  final TextEditingController dinheiroGanhoController = TextEditingController();
+  final TextEditingController pactoController = TextEditingController();
+
+  String _infoDados = 'Informe seus dados';
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  String _infoValores = 'Informe os dados';
-
-  void _limparTudo() {
+  void _limparDados() {
     dinheiroGanhoController.clear();
-    seuPactoController.clear();
+    pactoController.clear();
     setState(() {
-      _infoValores = 'Informe os dados';
+      _infoDados = 'Informe seus dados';
       _formKey = GlobalKey<FormState>();
     });
   }
@@ -31,18 +31,18 @@ class _HomePage extends State<HomePage> {
           ',',
           '.',
         );
-        final seuPactoString = seuPactoController.text.replaceAll(',', '.');
+        final pactoString = pactoController.text.replaceAll(',', '.');
 
         //Dízimo
         double renda = double.parse(dinheiroGanhoString);
-        double dizimo = renda * 0.10;
+        double dizimo = renda / 10;
 
-        //Pacto
-        double porcentagemPacto = double.parse(seuPactoString);
-        double pacto = renda * (porcentagemPacto / 100.0);
+        //Oferta
+        double porcentagemPacto = double.parse(pactoString);
+        double pacto = renda / porcentagemPacto;
 
-        _infoValores =
-            'Seu dízimo: R\$ ${dizimo.toStringAsFixed(2)}\n Seu pacto: R\$ ${pacto.toStringAsFixed(2)}';
+        _infoDados =
+            'Seu Dízimo: R\$ ${dizimo.toStringAsFixed(2)} \n Sua oferta: R\$ ${pacto.toStringAsFixed(2)}';
       });
     }
   }
@@ -50,10 +50,9 @@ class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color(0xFF153862),
-        title: const Text(
+        title: Text(
           'Calculadora de Dízimo e Oferta',
           style: TextStyle(
             color: Colors.white,
@@ -65,95 +64,103 @@ class _HomePage extends State<HomePage> {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                //Dinheiro ganho
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Digite quanto você ganhou',
-                    labelStyle: TextStyle(color: Color(0xFF153862)),
-                    border: OutlineInputBorder(),
-                    prefixText: 'R\$ ',
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Dinheiro ganho',
+                      labelStyle: TextStyle(
+                        color: Color(0xFF153862),
+                        fontSize: 17,
+                      ),
+                      prefixText: 'R\$ ',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    controller: dinheiroGanhoController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Informe o dinheiro ganho';
+                      }
+                      if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                        return 'Número inválido';
+                      }
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  controller: dinheiroGanhoController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obrigatório';
-                    }
-                    if (double.tryParse(value.replaceAll(',', '.')) == null) {
-                      return 'Valor inválido';
-                    }
-                    return null;
-                  },
-                ),
-
-                SizedBox(height: 16), //Espaçamento de 16px de altura
-                //Seu pacto
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: 'Porcentagem do pacto',
-                    labelStyle: TextStyle(color: Color(0xFF153862)),
-                    suffixText: '%',
-                    border: OutlineInputBorder(),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    decoration: InputDecoration(
+                      labelText: 'Porcentagem do pacto',
+                      labelStyle: TextStyle(
+                        color: Color(0xFF153862),
+                        fontSize: 17,
+                      ),
+                      suffixText: '%',
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.numberWithOptions(
+                      decimal: true,
+                    ),
+                    controller: pactoController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Informe a porcentagem';
+                      }
+                      if (double.tryParse(value.replaceAll(',', '.')) == null) {
+                        return 'Número inválido';
+                      }
+                      return null;
+                    },
                   ),
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  controller: seuPactoController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obrigatório';
-                    }
-                    if (double.tryParse(value.replaceAll(',', '.')) == null) {
-                      return 'Valor inválido';
-                    }
-                    return null;
-                  },
-                ),
-
-                SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      onPressed: _calcular,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF153862),
-                        padding: EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: _calcular,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF153862),
+                          padding: EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Calcular',
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
-                      child: Text(
-                        'Calcular',
-                        style: TextStyle(fontSize: 17, color: Colors.white),
-                      ),
-                    ),
-
-                    SizedBox(width: 16),
-
-                    ElevatedButton(
-                      onPressed: _limparTudo,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF153862),
-                        padding: EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: _limparDados,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF153862),
+                          padding: EdgeInsets.all(16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        child: Text(
+                          'Limpar tudo',
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
-                      child: Text(
-                        'Limpar tudo',
-                        style: TextStyle(color: Colors.white, fontSize: 17),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                Text(_infoValores, style: TextStyle(fontSize: 17)),
-              ],
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    _infoDados,
+                    style: TextStyle(color: Colors.black, fontSize: 17),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
